@@ -1,0 +1,68 @@
+---
+# tasks file for mebooks.ansible-role-docker-gollum
+
+- name: Ensure gollum directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+  - /etc/gollum
+  - /etc/gollum/content
+  tags:
+  - traefik
+  - gollum
+  - docker
+
+# https://github.com/jcdarwin/docker-gollum-alpine
+- name: Deploy gollum wiki container
+  docker_container:
+    name: gollum
+    image: mebooks/docker-gollum-alpine
+    restart_policy: unless-stopped
+    volumes:
+    - /etc/gollum/content:/wiki
+    labels:
+      traefik.enable: "true"
+      traefik.backend: gollum
+      traefik.frontend.rule: "Host:wiki.{{ domain }}"
+      traefik.frontend.auth.basic: "{{ owner }}:{{ owner_password_encrypted }}"
+      traefik.port: "4567"
+  tags:
+  - traefik
+  - gollum
+  - docker
+
+- name: ensure our git checkout exists
+  git:
+    repo: "{{ gollum.remote }}"
+    dest: /etc/gollum/content
+    update: no
+  tags:
+  - traefik
+  - gollum
+  - docker
+
+- name: Set a cron job to hourly git push any changes
+  action: template
+    src=templates/git_push.j2
+    dest=/etc/cron.hourly/git_push
+    mode=0755
+  tags:
+  - traefik
+  - gollum
+  - docker
+
+- name: Check that our cron is valid
+  command: run-parts --test --verbose /etc/cron.hourly
+  register: result
+  tags:
+  - traefik
+  - gollum
+  - docker
+
+- name: Show the result of our cron
+  debug: var=result
+  tags:
+  - traefik
+  - gollum
+  - docker

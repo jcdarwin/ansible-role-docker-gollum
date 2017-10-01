@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mkdir -p /var/log/cron.hourly
+
+cd /etc/gollum/content
+git push origin master >> /var/log/cron.hourly/git_push.log

@@ -1,0 +1,8 @@
+---
+# defaults file for mebooks.ansible-role-docker-gollum
+domain: domain.tld
+owner: admin
+owner_password_encrypted: WHATEVER
+
+ansible_role_docker_gollum:
+  remote: git@bitbucket.org:whoever/wiki.git
