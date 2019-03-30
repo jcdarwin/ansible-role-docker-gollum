@@ -24,9 +24,10 @@
     labels:
       traefik.enable: "true"
       traefik.backend: gollum
-      traefik.frontend.rule: "Host:wiki.{{ domain }}"
-      traefik.frontend.auth.basic: "{{ owner }}:{{ owner_password_encrypted }}"
+      traefik.frontend.rule: "Host:wiki.{{ gollum.domain }}"
+      traefik.frontend.auth.basic: "{{ gollum.owner }}:{{ gollum.owner_password_encrypted }}"
       traefik.port: "4567"
+      com.datadoghq.ad.logs: '[{"source": "do.mebooks.co.nz", "service": "gollum"}]'
   tags:
   - traefik
   - gollum

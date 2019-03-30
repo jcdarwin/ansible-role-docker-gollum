@@ -27,9 +27,10 @@ It's running on Docker.
 Role Variables
 --------------
 
-- `domain` defaults to *domain.tld*
-- `owner` defaults to *admin*
-- `owner_password_encrypted` defaults to *WHATEVER*
+- `gollum.domain` defaults to *domain.tld*
+- `gollum.source`: defaults to *domain.tld*
+- `gollum.owner` defaults to *admin*
+- `gollum.owner_password_encrypted` defaults to *WHATEVER*
 - `gollum.remote` defaults to *git@bitbucket.org:whoever/wiki.git*
 
 Dependencies
@@ -48,18 +49,23 @@ Example Playbook
   become_method: sudo
 
   vars:
-    traefik_testing: true
-    owner: administrator
-    domain: mebooks.co.nz
-    email: mebooks.support@gmail.com
-    users:
-     # owner_password / owner_password_encrypted are defined in the unversioned group_vars/remote
-    - username: "{{ owner }}"
-      password: "{{ owner_password }}"
-      acl:
-      - traefik
+    traefik:
+      traefik_testing: true
+      owner: administrator
+      domain: mebooks.co.nz
+      email: mebooks.support@gmail.com
+      users:
+      # owner_password / owner_password_encrypted are defined in the unversioned group_vars/remote
+      - username: "{{ owner }}"
+        password: "{{ owner_password }}"
+        acl:
+        - traefik
 
     gollum:
+      domain: wiki.mebooks.co.nz
+      source: mebooks.co.nz
+      owner: "{{ owner }}"
+      owner_password_encrypted: "{{ owner_password_encrypted }}"
       remote: git@bitbucket.org:nzmebooks/wiki.git
 
   roles:
