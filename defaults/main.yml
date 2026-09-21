@@ -5,4 +5,4 @@ gollum:
   source: domain.tld
   owner: admin
   owner_password_encrypted: WHATEVER
-  remote: git@bitbucket.org:whoever/wiki.git
+  remote: git@github.com:whoever/wiki.git

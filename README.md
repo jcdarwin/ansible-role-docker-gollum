@@ -24,6 +24,16 @@ Developed and tested on *Ubuntu Server 16.10 Yakkety*, but should work on other 
 
 It's running on Docker.
 
+Deploy Key
+----------
+
+`ansible-role-users` generates a single SSH keypair on the server at `/root/.ssh/id_rsa` and prints the public key — it does **not** register it with any git remote for you. Before this role can clone (and before the hourly cron job can push) `gollum.remote`, that public key must be manually added as a **deploy key with write access** on the remote repo:
+
+* GitHub: repo → Settings → Deploy keys → Add deploy key → paste `cat /root/.ssh/id_rsa.pub`, tick "Allow write access"
+* Bitbucket: repo → Repository settings → Access keys → Add key
+
+If the remote is being changed on an already-provisioned server (e.g. migrating providers), also make sure the new host's key is trusted before the first clone/push, e.g. `ssh-keyscan -H github.com >> /root/.ssh/known_hosts` — the `git` task in `tasks/main.yml` sets `accept_hostkey: yes` so a fresh deploy handles this automatically, but it won't retroactively fix a checkout that already exists on disk.
+
 Role Variables
 --------------
 
@@ -31,7 +41,7 @@ Role Variables
 - `gollum.source`: defaults to *domain.tld*
 - `gollum.owner` defaults to *admin*
 - `gollum.owner_password_encrypted` defaults to *WHATEVER*
-- `gollum.remote` defaults to *git@bitbucket.org:whoever/wiki.git*
+- `gollum.remote` defaults to *git@github.com:whoever/wiki.git*
 
 Dependencies
 ------------
@@ -66,7 +76,7 @@ Example Playbook
       source: mebooks.co.nz
       owner: "{{ owner }}"
       owner_password_encrypted: "{{ owner_password_encrypted }}"
-      remote: git@bitbucket.org:nzmebooks/wiki.git
+      remote: git@github.com:nzmebooks/wiki.git
 
   roles:
     # We presume we've already run ansible-role-users and ansible-role-common
