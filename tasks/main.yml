@@ -38,6 +38,7 @@
     repo: "{{ gollum.remote }}"
     dest: /etc/gollum/content
     update: no
+    accept_hostkey: yes
   tags:
   - traefik
   - gollum
